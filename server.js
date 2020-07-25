@@ -5,7 +5,7 @@ const app = express();
 const middlewares = require("./server/middlewares");
 const toobusy = require("./server/middlewares/toobusy");
 const addSecurityMiddleware = require("./server/middlewares/security");
-const router = require("./server/routes");
+const v1Routes = require("./server/routes/v1");
 
 // Trust the now proxy
 app.set('trust proxy', true);
@@ -16,17 +16,22 @@ app.use(toobusy);
 // Security middleware
 addSecurityMiddleware(app, { enableNonce: false, enableCSP: false });
 
-// All other middlewares
+// All other middlewares - Compression, CORS, Parsers
 app.use(middlewares);
 
 // To intialize DB connection process
-const mongoConnection = require("./db");
+// const mongoConnection = require("./db");
 
 // Static files served 
 app.use(express.static(path.join(__dirname, "./dist/ui")));
 
 // API routes middleware
-app.use("/api", router);
+app.use("/server/v1/api/", v1Routes);
+
+// Ping-Pong
+app.use("/ping", (req, res) => {
+    res.status(200).send({ statusCode: 200, message: 'pong' });
+});
 
 // Always return index.html file since it is a SPA
 app.use("**", express.static(path.join(__dirname, "./dist/ui")));
@@ -34,10 +39,10 @@ app.use("**", express.static(path.join(__dirname, "./dist/ui")));
 // Bootstraping app at specified port
 let port = process.env.PORT || 8080;
 const server = app.listen(port, (err) => {
-    console.log("****************************************************************************");
+    console.log("*************************************************************************************");
     if (err) {
-        console.log(`[rootService][appInitialization] success : bootstrapped at port ${port}`);
+        console.log(`[seller-platform][rootService][appInitialization] error : failed to bootstrap at port ${port}`);
         return;
     }
-    console.log(`[rootService][appInitialization] error : failed to bootstrap at port ${port}`);
+    console.log(`[seller-platform][rootService][appInitialization] success : bootstrapped at port ${port}`);
 });
