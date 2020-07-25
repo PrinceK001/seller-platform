@@ -1,0 +1,1 @@
+// process.env.SELLER_PLATFORM = "production";
