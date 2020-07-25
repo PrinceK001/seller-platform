@@ -26,7 +26,7 @@ app.use(middlewares);
 app.use(express.static(path.join(__dirname, "./dist/ui")));
 
 // API routes middleware
-app.use("/server/v1/api/", v1Routes);
+app.use("/server/v1", v1Routes);
 
 // Ping-Pong
 app.use("/ping", (req, res) => {
